@@ -24,10 +24,23 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code fences):
   "targetLanguage": "Japanese"
 }
 
-Rules for nuances:
-- Explain the tone and intent of expressions
+Rules for nuances (IMPORTANT — behavior differs by direction):
+
+If input is English → output is Japanese:
+- Explain the tone and intent of the English input's expressions
 - Note if expressions are casual, formal, or business-like
 - Explain cultural context if relevant
+
+If input is Japanese → output is English:
+- Do NOT explain the Japanese input's meaning
+- Instead, explain the English grammar and expressions used in YOUR translation
+- Help the user (a Japanese learner of English) understand WHY you chose those English expressions
+- Examples of good nuance explanations for Japanese→English:
+  - "I'd like to" は丁寧に希望を伝える表現。"I want to" よりフォーマル
+  - "regarding" は "about" のフォーマルな言い換えで、ビジネスメールでよく使われる
+  - "Could you ...?" は "Can you ...?" より丁寧な依頼表現
+
+General rules for nuances:
 - Write nuance explanations in Japanese
 - 2-4 bullet points
 
