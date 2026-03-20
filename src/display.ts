@@ -1,5 +1,4 @@
 import chalk from "chalk";
-import boxen from "boxen";
 import type { TranslationResult } from "./translate.js";
 
 function formalityStars(level: number): string {
@@ -31,12 +30,7 @@ export function displayResult(result: TranslationResult): void {
   const label = formalityLabel(result.formality);
   lines.push(chalk.bold.cyan("フォーマル度") + " " + chalk.yellow(stars) + chalk.gray(` （${label}）`));
 
-  const box = boxen(lines.join("\n"), {
-    padding: 1,
-    margin: 1,
-    borderStyle: "round",
-    borderColor: "cyan",
-  });
-
-  console.log(box);
+  console.log("");
+  console.log(lines.join("\n"));
+  console.log("");
 }
