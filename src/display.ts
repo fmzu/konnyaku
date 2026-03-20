@@ -1,6 +1,17 @@
 import chalk from "chalk";
 import type { TranslationResult } from "./translate.js";
 
+function highlightEnglish(text: string): string {
+  // Highlight text in「」
+  let result = text.replace(/「([^」]+)」/g, (_, content) => `「${chalk.cyan(content)}」`);
+  // Highlight text in ""
+  result = result.replace(/"([^"]+)"/g, (_, content) => `"${chalk.cyan(content)}"`);
+  // Highlight standalone English words/phrases between non-ASCII chars
+  result = result.replace(/(?<=[^\x00-\x7F]|^)([A-Za-z][A-Za-z\s'.,\-~]+[A-Za-z.])(?=[^\x00-\x7F]|$)/g,
+    (match) => chalk.cyan(match));
+  return result;
+}
+
 function formalityStars(level: number): string {
   return "★".repeat(level) + "☆".repeat(5 - level);
 }
@@ -21,7 +32,7 @@ export function displayResult(result: TranslationResult): void {
   // ニュアンス
   lines.push(chalk.bold.cyan("ニュアンス"));
   for (const nuance of result.nuances) {
-    lines.push(chalk.gray("・") + nuance);
+    lines.push(chalk.gray("・") + highlightEnglish(nuance));
   }
   lines.push("");
 
