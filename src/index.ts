@@ -26,36 +26,37 @@ try {
       { key: "2", label: "もっとフォーマルに", value: "formal" as const },
     ];
 
-    const rl = createInterface({ input: process.stdin, output: process.stdout });
-    const ask = (prompt: string): Promise<string> =>
-      new Promise((resolve) => rl.question(prompt, resolve));
+    const waitForKey = (): Promise<string> =>
+      new Promise((resolve) => {
+        process.stdin.setRawMode(true);
+        process.stdin.resume();
+        process.stdin.once("data", (data) => {
+          process.stdin.setRawMode(false);
+          process.stdin.pause();
+          resolve(data.toString());
+        });
+      });
 
-    try {
-      while (true) {
-        // 選択肢表示
-        let selectedIndex = 0;
-        const showChoices = () => {
-          for (let i = 0; i < choices.length; i++) {
-            const prefix = i === selectedIndex ? chalk.cyan("❯") : " ";
-            const num = chalk.gray(`[${choices[i].key}]`);
-            console.log(`${prefix} ${num} ${choices[i].label}`);
-          }
-          console.log(chalk.gray("  [Enter] 終了"));
-        };
-        showChoices();
-
-        const answer = (await ask("")).trim();
-
-        if (answer === "") break;
-
-        const choice = choices.find((c) => c.key === answer);
-        if (!choice) continue;
-
-        result = await retranslateWithTone(text, result.translation, choice.value);
-        displayResult(result);
+    while (true) {
+      for (const c of choices) {
+        console.log(chalk.gray(`[${c.key}]`) + ` ${c.label}`);
       }
-    } finally {
-      rl.close();
+      console.log(chalk.gray("[Enter] 終了"));
+
+      const key = await waitForKey();
+
+      // Ctrl+C
+      if (key === "\x03") {
+        process.exit(0);
+      }
+      // Enter
+      if (key === "\r" || key === "\n") break;
+
+      const choice = choices.find((c) => c.key === key);
+      if (!choice) continue;
+
+      result = await retranslateWithTone(text, result.translation, choice.value);
+      displayResult(result);
     }
   }
 } catch (error) {
