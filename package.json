@@ -1,5 +1,5 @@
 {
-  "name": "eigo",
+  "name": "honyaku",
   "version": "0.1.0",
   "description": "CLI translation tool with nuance explanations, powered by Claude",
   "type": "module",
