@@ -12,8 +12,8 @@
   ],
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "tsc",
-    "prepublishOnly": "tsc"
+    "build": "npx tsc",
+    "prepublishOnly": "npx tsc"
   },
   "keywords": [
     "translation",
