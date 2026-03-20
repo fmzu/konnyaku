@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 
-import { createInterface } from "node:readline";
 import chalk from "chalk";
+import { select, Separator } from "@inquirer/prompts";
 import { translate, retranslateWithTone } from "./translate.js";
 import { displayResult } from "./display.js";
 
@@ -21,45 +21,22 @@ try {
 
   // JP→EN の場合、トーン調整のインタラクティブループ
   if (result.targetLanguage === "English") {
-    const choices = [
-      { key: "1", label: "もっとカジュアルに", value: "casual" as const },
-      { key: "2", label: "もっとフォーマルに", value: "formal" as const },
-    ];
-
-    const waitForKey = (): Promise<string> =>
-      new Promise((resolve) => {
-        process.stdin.setRawMode(true);
-        process.stdin.resume();
-        process.stdin.once("data", (data) => {
-          process.stdin.setRawMode(false);
-          process.stdin.pause();
-          resolve(data.toString());
-        });
-      });
-
     while (true) {
-      for (const c of choices) {
-        console.log(chalk.gray(`[${c.key}]`) + ` ${c.label}`);
-      }
-      console.log(chalk.gray("[Enter] 終了"));
+      const choice = await select({
+        message: "トーンを調整",
+        choices: [
+          { name: "[1] もっとカジュアルに", value: "casual", key: "1" },
+          { name: "[2] もっとフォーマルに", value: "formal", key: "2" },
+          { name: "[3] 終了", value: "exit", key: "3" },
+        ],
+      }).catch(() => "exit" as const);
 
-      const key = await waitForKey();
-
-      // Ctrl+C
-      if (key === "\x03") {
-        process.exit(0);
-      }
-      // Enter
-      if (key === "\r" || key === "\n") break;
-
-      const choice = choices.find((c) => c.key === key);
-      if (!choice) continue;
+      if (choice === "exit") break;
 
       const prevTranslation = result.translation;
-      result = await retranslateWithTone(text, result.translation, choice.value);
+      result = await retranslateWithTone(text, result.translation, choice as "casual" | "formal");
 
       if (result.translation === prevTranslation) {
-        console.log("");
         console.log(chalk.gray("これ以上の調整はできません。"));
         break;
       }
