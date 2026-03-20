@@ -5,7 +5,7 @@
   "type": "module",
   "main": "dist/index.js",
   "bin": {
-    "eigo": "dist/index.js"
+    "konnyaku": "dist/index.js"
   },
   "files": [
     "dist"
