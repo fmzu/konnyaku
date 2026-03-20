@@ -78,15 +78,12 @@ Rules for nuances:
 `;
 
 import { execFileSync } from "node:child_process";
+import { loadConfig } from "./config.js";
 
 function getCommand(): { cmd: string; args: string[] } {
-  const env = process.env.KONNYAKU_CMD;
-  if (env) {
-    const parts = env.split(" ");
-    return { cmd: parts[0], args: parts.slice(1) };
-  }
-  // Default: codex exec
-  return { cmd: "codex", args: ["exec"] };
+  const { command } = loadConfig();
+  const parts = command.split(" ");
+  return { cmd: parts[0], args: parts.slice(1) };
 }
 
 function runAI(prompt: string): TranslationResult {

@@ -4,6 +4,7 @@ import chalk from "chalk";
 import { select, Separator } from "@inquirer/prompts";
 import { translate, retranslateWithTone } from "./translate.js";
 import { displayResult } from "./display.js";
+import { saveConfig, loadConfig } from "./config.js";
 
 const args = process.argv.slice(2);
 
@@ -11,6 +12,21 @@ if (args.length === 0) {
   console.log("Usage: eigo <text to translate>");
   console.log("Example: eigo Hello! How are you?");
   process.exit(1);
+}
+
+// Handle 'use' subcommand
+if (args[0] === "use") {
+  if (args.length < 2) {
+    const { command } = loadConfig();
+    console.log(`現在のコマンド: ${command}`);
+    console.log("Usage: konnyaku use <command>");
+    console.log('Example: konnyaku use "codex exec"');
+    process.exit(0);
+  }
+  const command = args.slice(1).join(" ");
+  saveConfig({ command });
+  console.log(`コマンドを設定しました: ${command}`);
+  process.exit(0);
 }
 
 const text = args.join(" ");
