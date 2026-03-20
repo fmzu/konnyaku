@@ -79,18 +79,29 @@ Rules for nuances:
 
 import { execFileSync } from "node:child_process";
 
-function runClaude(prompt: string): TranslationResult {
+function getCommand(): { cmd: string; args: string[] } {
+  const env = process.env.KONNYAKU_CMD;
+  if (env) {
+    const parts = env.split(" ");
+    return { cmd: parts[0], args: parts.slice(1) };
+  }
+  // Default: codex exec
+  return { cmd: "codex", args: ["exec"] };
+}
+
+function runAI(prompt: string): TranslationResult {
+  const { cmd, args } = getCommand();
   let output: string;
   try {
-    output = execFileSync("claude", ["-p", prompt], {
+    const fullArgs = [...args, prompt];
+    output = execFileSync(cmd, fullArgs, {
       encoding: "utf-8",
       maxBuffer: 10 * 1024 * 1024,
     }).trim();
   } catch (e: any) {
-    throw new Error(`claude command failed: ${e.stderr || e.message}`);
+    throw new Error(`Command failed: ${e.stderr || e.message}`);
   }
 
-  // Extract JSON from response (handle potential markdown code fences)
   const jsonMatch = output.match(/\{[\s\S]*\}/);
   if (!jsonMatch) {
     throw new Error("Failed to parse translation response");
@@ -101,7 +112,7 @@ function runClaude(prompt: string): TranslationResult {
 
 export async function translate(text: string): Promise<TranslationResult> {
   const prompt = PROMPT_TEMPLATE + text;
-  return runClaude(prompt);
+  return runAI(prompt);
 }
 
 export async function retranslateWithTone(
@@ -114,5 +125,5 @@ export async function retranslateWithTone(
     .replace(/\{direction\}/g, directionJa)
     .replace("{originalText}", originalText)
     .replace("{currentTranslation}", currentTranslation);
-  return runClaude(prompt);
+  return runAI(prompt);
 }

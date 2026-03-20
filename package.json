@@ -1,7 +1,7 @@
 {
   "name": "konnyaku",
   "version": "0.1.0",
-  "description": "CLI translation tool with nuance explanations, powered by Claude",
+  "description": "CLI translation tool with nuance explanations",
   "type": "module",
   "main": "dist/index.js",
   "bin": {
@@ -20,8 +20,7 @@
     "cli",
     "english",
     "japanese",
-    "claude",
-    "ai"
+"ai"
   ],
   "repository": {
     "type": "git",
