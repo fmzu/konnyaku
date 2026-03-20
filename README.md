@@ -1,20 +1,24 @@
 # eigo
 
-英語と日本語を双方向に翻訳するCLIツール。翻訳結果に加えて、ニュアンスの解説とフォーマル度を表示する。
+英語と日本語を双方向に翻訳するCLIツール。翻訳結果に加えて、ニュアンスの解説を表示する。
 
 バックエンドに `claude` CLI（Claude Code）を使用するため、APIキーの設定は不要。
 
-## 必要なもの
+## 前提条件
 
-- [Bun](https://bun.sh/)
-- [Claude Code](https://docs.anthropic.com/en/docs/claude-code)（`claude` コマンドが使える状態）
+- [Node.js](https://nodejs.org/) v18以上
+- [Claude Code](https://docs.anthropic.com/en/docs/claude-code)（`claude` コマンドが認証済みの状態）
 
-## セットアップ
+## インストール
 
 ```bash
-cd eigo
-bun install
-bun link
+npm install -g eigo
+```
+
+インストールせずに実行することもできる：
+
+```bash
+npx eigo Hello!
 ```
 
 ## 使い方
@@ -37,27 +41,10 @@ eigo I appreciate your help with this matter.
 eigo お忙しいところ恐れ入りますが、ご確認をお願いいたします。
 ```
 
-## 出力例
-
-```
-╭──────────────────────────────────────────────────╮
-│                                                  │
-│  翻訳                                            │
-│  この件についてご協力いただきありがとうございます。  │
-│                                                  │
-│  ニュアンス                                      │
-│  ・感謝を丁寧に伝える表現                         │
-│  ・ビジネスメールでよく使われるフレーズ             │
-│                                                  │
-│  フォーマル度 ★★★★☆ （フォーマル）               │
-│                                                  │
-╰──────────────────────────────────────────────────╯
-```
+日本語→英語の場合は、翻訳後にトーン（カジュアル/フォーマル）の調整ができる。
 
 ## 技術スタック
 
-- TypeScript
-- Bun（ランタイム / パッケージマネージャ）
+- TypeScript / Node.js
 - chalk（ターミナル装飾）
-- boxen（ボックス描画）
 - Claude Code CLI（翻訳エンジン）

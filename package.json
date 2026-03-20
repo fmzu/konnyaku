@@ -1,25 +1,39 @@
 {
   "name": "eigo",
   "version": "0.1.0",
-  "description": "CLI translation tool with nuance explanations",
+  "description": "CLI translation tool with nuance explanations, powered by Claude",
   "type": "module",
-  "main": "src/index.ts",
+  "main": "dist/index.js",
   "bin": {
-    "eigo": "src/index.ts"
+    "eigo": "dist/index.js"
   },
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "bun build src/index.ts --outdir dist --target node",
-    "start": "bun run src/index.ts"
+    "build": "tsc",
+    "prepublishOnly": "tsc"
   },
+  "keywords": [
+    "translation",
+    "cli",
+    "english",
+    "japanese",
+    "claude",
+    "ai"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shoto-do/eigo.git"
+  },
+  "license": "MIT",
   "dependencies": {
     "@inquirer/prompts": "^8.3.2",
-    "boxen": "^8.0.1",
     "chalk": "^5.4.1"
   },
   "devDependencies": {
     "@types/node": "^25.3.3",
-    "bun-types": "^1.3.11",
     "typescript": "^5.9.3"
   }
 }

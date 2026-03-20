@@ -77,18 +77,18 @@ Rules for nuances:
 - 2-4 bullet points
 `;
 
+import { execFileSync } from "node:child_process";
+
 function runClaude(prompt: string): TranslationResult {
-  const result = Bun.spawnSync(["claude", "-p", prompt], {
-    stdout: "pipe",
-    stderr: "pipe",
-  });
-
-  if (result.exitCode !== 0) {
-    const stderr = result.stderr.toString();
-    throw new Error(`claude command failed: ${stderr}`);
+  let output: string;
+  try {
+    output = execFileSync("claude", ["-p", prompt], {
+      encoding: "utf-8",
+      maxBuffer: 10 * 1024 * 1024,
+    }).trim();
+  } catch (e: any) {
+    throw new Error(`claude command failed: ${e.stderr || e.message}`);
   }
-
-  const output = result.stdout.toString().trim();
 
   // Extract JSON from response (handle potential markdown code fences)
   const jsonMatch = output.match(/\{[\s\S]*\}/);

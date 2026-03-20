@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 
 import chalk from "chalk";
 import { select, Separator } from "@inquirer/prompts";
@@ -25,9 +25,9 @@ try {
       const choice = await select({
         message: "トーンを調整",
         choices: [
-          { name: "[1] もっとカジュアルに", value: "casual", key: "1" },
-          { name: "[2] もっとフォーマルに", value: "formal", key: "2" },
-          { name: "[3] 終了", value: "exit", key: "3" },
+          { name: "[1] もっとカジュアルに", value: "casual" },
+          { name: "[2] もっとフォーマルに", value: "formal" },
+          { name: "[3] 終了", value: "exit" },
         ],
       }).catch(() => "exit" as const);
 
