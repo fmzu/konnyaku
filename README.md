@@ -1,6 +1,6 @@
-# eigo
+# konnyaku
 
-英語と日本語を双方向に翻訳するCLIツール。翻訳結果に加えて、ニュアンスの解説を表示する。
+ほんやくコンニャクにインスパイアされた、CLIで使える翻訳ツール。ニュアンス解説つき。
 
 バックエンドに `claude` CLI（Claude Code）を使用するため、APIキーの設定は不要。
 
@@ -12,19 +12,19 @@
 ## インストール
 
 ```bash
-npm install -g eigo
+npm install -g konnyaku
 ```
 
 インストールせずに実行することもできる：
 
 ```bash
-npx eigo Hello!
+npx konnyaku Hello!
 ```
 
 ## 使い方
 
 ```bash
-eigo <翻訳したいテキスト>
+konnyaku <翻訳したいテキスト>
 ```
 
 言語は自動判定される。英語を入力すれば日本語に、日本語を入力すれば英語に翻訳する。
@@ -32,13 +32,13 @@ eigo <翻訳したいテキスト>
 ### 英語 → 日本語
 
 ```bash
-eigo I appreciate your help with this matter.
+konnyaku I appreciate your help with this matter.
 ```
 
 ### 日本語 → 英語
 
 ```bash
-eigo お忙しいところ恐れ入りますが、ご確認をお願いいたします。
+konnyaku お忙しいところ恐れ入りますが、ご確認をお願いいたします。
 ```
 
 日本語→英語の場合は、翻訳後にトーン（カジュアル/フォーマル）の調整ができる。
