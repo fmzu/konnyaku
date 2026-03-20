@@ -13,7 +13,6 @@
     "start": "bun run src/index.ts"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.52.0",
     "chalk": "^5.4.1",
     "boxen": "^8.0.1"
   },

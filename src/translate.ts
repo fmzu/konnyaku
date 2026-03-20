@@ -1,5 +1,3 @@
-import Anthropic from "@anthropic-ai/sdk";
-
 export interface TranslationResult {
   translation: string;
   nuances: string[];
@@ -8,15 +6,13 @@ export interface TranslationResult {
   targetLanguage: string;
 }
 
-const client = new Anthropic();
-
-const SYSTEM_PROMPT = `You are a translation assistant. Translate the given text and provide nuance explanations.
+const PROMPT_TEMPLATE = `You are a translation assistant. Translate the given text and provide nuance explanations.
 
 Detect the input language:
 - If Japanese → translate to English
 - If English (or other) → translate to Japanese
 
-Respond ONLY with valid JSON in this exact format:
+Respond ONLY with valid JSON in this exact format (no markdown, no code fences):
 {
   "translation": "translated text here",
   "nuances": [
@@ -40,20 +36,31 @@ Rules for formality:
 - 2: Casual (everyday conversation)
 - 3: Neutral/Business casual
 - 4: Formal (business)
-- 5: Very formal (official documents)`;
+- 5: Very formal (official documents)
+
+Text to translate:
+`;
 
 export async function translate(text: string): Promise<TranslationResult> {
-  const message = await client.messages.create({
-    model: "claude-sonnet-4-20250514",
-    max_tokens: 1024,
-    system: SYSTEM_PROMPT,
-    messages: [{ role: "user", content: text }],
+  const prompt = PROMPT_TEMPLATE + text;
+
+  const result = Bun.spawnSync(["claude", "-p", prompt], {
+    stdout: "pipe",
+    stderr: "pipe",
   });
 
-  const content = message.content[0];
-  if (content.type !== "text") {
-    throw new Error("Unexpected response type");
+  if (result.exitCode !== 0) {
+    const stderr = result.stderr.toString();
+    throw new Error(`claude command failed: ${stderr}`);
   }
 
-  return JSON.parse(content.text) as TranslationResult;
+  const output = result.stdout.toString().trim();
+
+  // Extract JSON from response (handle potential markdown code fences)
+  const jsonMatch = output.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error("Failed to parse translation response");
+  }
+
+  return JSON.parse(jsonMatch[0]) as TranslationResult;
 }

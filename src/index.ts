@@ -18,12 +18,7 @@ try {
   displayResult(result);
 } catch (error) {
   if (error instanceof Error) {
-    if (error.message.includes("API key")) {
-      console.error("Error: ANTHROPIC_API_KEY が設定されていません");
-      console.error("export ANTHROPIC_API_KEY=your-key-here");
-    } else {
-      console.error("Error:", error.message);
-    }
+    console.error("Error:", error.message);
   }
   process.exit(1);
 }
