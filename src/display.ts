@@ -16,7 +16,7 @@ export function displayResult(result: TranslationResult): void {
   const lines: string[] = [];
 
   // 翻訳
-  lines.push(result.translation);
+  lines.push(chalk.bold.whiteBright(result.translation));
   lines.push("");
 
   // ニュアンス
@@ -35,6 +35,3 @@ export function displayResult(result: TranslationResult): void {
   console.log("");
 }
 
-export function displayToneOptions(): void {
-  console.log(chalk.gray("[1] もっとカジュアルに  [2] もっとフォーマルに  [Enter] 終了"));
-}

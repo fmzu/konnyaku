@@ -13,8 +13,9 @@
     "start": "bun run src/index.ts"
   },
   "dependencies": {
-    "chalk": "^5.4.1",
-    "boxen": "^8.0.1"
+    "@inquirer/prompts": "^8.3.2",
+    "boxen": "^8.0.1",
+    "chalk": "^5.4.1"
   },
   "devDependencies": {
     "@types/node": "^25.3.3",

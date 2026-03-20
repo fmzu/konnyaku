@@ -1,8 +1,8 @@
 #!/usr/bin/env bun
 
-import { createInterface } from "node:readline";
 import { translate, retranslateWithTone } from "./translate.js";
-import { displayResult, displayToneOptions } from "./display.js";
+import { displayResult } from "./display.js";
+import { select } from "@inquirer/prompts";
 
 const args = process.argv.slice(2);
 
@@ -14,36 +14,26 @@ if (args.length === 0) {
 
 const text = args.join(" ");
 
-function ask(rl: ReturnType<typeof createInterface>, prompt: string): Promise<string> {
-  return new Promise((resolve) => rl.question(prompt, resolve));
-}
-
 try {
   let result = await translate(text);
   displayResult(result);
 
   // JP→EN の場合、トーン調整のインタラクティブループ
   if (result.targetLanguage === "English") {
-    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    while (true) {
+      const choice = await select({
+        message: "トーンを調整しますか？",
+        choices: [
+          { name: "もっとカジュアルに", value: "casual" },
+          { name: "もっとフォーマルに", value: "formal" },
+          { name: "終了", value: "exit" },
+        ],
+      }).catch(() => "exit" as const);
 
-    try {
-      while (true) {
-        displayToneOptions();
-        const answer = await ask(rl, "> ");
-        const trimmed = answer.trim();
+      if (choice === "exit") break;
 
-        if (trimmed === "1") {
-          result = await retranslateWithTone(text, result.translation, "casual");
-          displayResult(result);
-        } else if (trimmed === "2") {
-          result = await retranslateWithTone(text, result.translation, "formal");
-          displayResult(result);
-        } else {
-          break;
-        }
-      }
-    } finally {
-      rl.close();
+      result = await retranslateWithTone(text, result.translation, choice as "casual" | "formal");
+      displayResult(result);
     }
   }
 } catch (error) {
