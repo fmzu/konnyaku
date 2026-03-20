@@ -10,13 +10,13 @@
 ## インストール
 
 ```bash
-npm install -g konnyaku
+bun add -g konnyaku
 ```
 
 インストールせずに実行することもできる：
 
 ```bash
-npx konnyaku Hello!
+bunx konnyaku Hello!
 ```
 
 ## 使い方
