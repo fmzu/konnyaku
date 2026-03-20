@@ -1,7 +1,7 @@
 export interface TranslationResult {
   translation: string;
   nuances: string[];
-  formality: number; // 1-5
+  toneDescription: string; // text description of tone (EN→JP only)
   detectedLanguage: string;
   targetLanguage: string;
 }
@@ -19,7 +19,7 @@ Respond ONLY with valid JSON in this exact format (no markdown, no code fences):
     "explanation of nuance 1",
     "explanation of nuance 2"
   ],
-  "formality": 3,
+  "toneDescription": "tone description here or empty string",
   "detectedLanguage": "English",
   "targetLanguage": "Japanese"
 }
@@ -44,19 +44,40 @@ General rules for nuances:
 - Write nuance explanations in Japanese
 - 2-4 bullet points
 
-Rules for formality:
-- 1: Very casual (slang, friends)
-- 2: Casual (everyday conversation)
-- 3: Neutral/Business casual
-- 4: Formal (business)
-- 5: Very formal (official documents)
+Rules for toneDescription:
+- If input is English (translating to Japanese): Write a natural Japanese sentence describing the tone/formality of the original English text. Examples: "ビジネスシーンでよく使われるカジュアルな表現です", "フォーマルな文書向けの表現です", "友人同士で使うくだけた表現です"
+- If input is Japanese (translating to English): Set toneDescription to "" (empty string)
 
 Text to translate:
 `;
 
-export async function translate(text: string): Promise<TranslationResult> {
-  const prompt = PROMPT_TEMPLATE + text;
+const RETRANSLATE_PROMPT_TEMPLATE = `You are a translation assistant. The following Japanese text was translated to English as shown below. Please provide a more {direction} version of this English translation.
 
+Original Japanese: {originalText}
+Current English translation: {currentTranslation}
+
+Adjust the tone to be more {direction}. Keep the meaning the same.
+
+Respond ONLY with valid JSON in this exact format (no markdown, no code fences):
+{
+  "translation": "adjusted English translation here",
+  "nuances": [
+    "explanation of nuance 1",
+    "explanation of nuance 2"
+  ],
+  "toneDescription": "",
+  "detectedLanguage": "Japanese",
+  "targetLanguage": "English"
+}
+
+Rules for nuances:
+- Explain the English grammar and expressions used in YOUR translation
+- Help the user (a Japanese learner of English) understand WHY you chose those English expressions
+- Write nuance explanations in Japanese
+- 2-4 bullet points
+`;
+
+function runClaude(prompt: string): TranslationResult {
   const result = Bun.spawnSync(["claude", "-p", prompt], {
     stdout: "pipe",
     stderr: "pipe",
@@ -76,4 +97,22 @@ export async function translate(text: string): Promise<TranslationResult> {
   }
 
   return JSON.parse(jsonMatch[0]) as TranslationResult;
+}
+
+export async function translate(text: string): Promise<TranslationResult> {
+  const prompt = PROMPT_TEMPLATE + text;
+  return runClaude(prompt);
+}
+
+export async function retranslateWithTone(
+  originalText: string,
+  currentTranslation: string,
+  direction: "casual" | "formal",
+): Promise<TranslationResult> {
+  const directionJa = direction === "casual" ? "casual" : "formal";
+  const prompt = RETRANSLATE_PROMPT_TEMPLATE
+    .replace(/\{direction\}/g, directionJa)
+    .replace("{originalText}", originalText)
+    .replace("{currentTranslation}", currentTranslation);
+  return runClaude(prompt);
 }

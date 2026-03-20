@@ -12,15 +12,6 @@ function highlightEnglish(text: string): string {
   return result;
 }
 
-function formalityStars(level: number): string {
-  return "★".repeat(level) + "☆".repeat(5 - level);
-}
-
-function formalityLabel(level: number): string {
-  const labels = ["", "とてもカジュアル", "カジュアル", "ビジネスカジュアル", "フォーマル", "とてもフォーマル"];
-  return labels[level] || "";
-}
-
 export function displayResult(result: TranslationResult): void {
   const lines: string[] = [];
 
@@ -32,14 +23,18 @@ export function displayResult(result: TranslationResult): void {
   for (const nuance of result.nuances) {
     lines.push(chalk.gray("・") + highlightEnglish(nuance));
   }
-  lines.push("");
 
-  // フォーマル度
-  const stars = formalityStars(result.formality);
-  const label = formalityLabel(result.formality);
-  lines.push(chalk.yellow(stars) + chalk.gray(` （${label}）`));
+  // トーン説明（EN→JPの場合のみ）
+  if (result.targetLanguage === "Japanese" && result.toneDescription) {
+    lines.push("");
+    lines.push(chalk.gray(result.toneDescription));
+  }
 
   console.log("");
   console.log(lines.join("\n"));
   console.log("");
+}
+
+export function displayToneOptions(): void {
+  console.log(chalk.gray("[1] もっとカジュアルに  [2] もっとフォーマルに  [Enter] 終了"));
 }
