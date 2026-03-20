@@ -1,8 +1,9 @@
 #!/usr/bin/env bun
 
+import { createInterface } from "node:readline";
+import chalk from "chalk";
 import { translate, retranslateWithTone } from "./translate.js";
 import { displayResult } from "./display.js";
-import { select } from "@inquirer/prompts";
 
 const args = process.argv.slice(2);
 
@@ -20,20 +21,41 @@ try {
 
   // JP→EN の場合、トーン調整のインタラクティブループ
   if (result.targetLanguage === "English") {
-    while (true) {
-      const choice = await select({
-        message: "トーンを調整しますか？",
-        choices: [
-          { name: "もっとカジュアルに", value: "casual" },
-          { name: "もっとフォーマルに", value: "formal" },
-          { name: "終了", value: "exit" },
-        ],
-      }).catch(() => "exit" as const);
+    const choices = [
+      { key: "1", label: "もっとカジュアルに", value: "casual" as const },
+      { key: "2", label: "もっとフォーマルに", value: "formal" as const },
+    ];
 
-      if (choice === "exit") break;
+    const rl = createInterface({ input: process.stdin, output: process.stdout });
+    const ask = (prompt: string): Promise<string> =>
+      new Promise((resolve) => rl.question(prompt, resolve));
 
-      result = await retranslateWithTone(text, result.translation, choice as "casual" | "formal");
-      displayResult(result);
+    try {
+      while (true) {
+        // 選択肢表示
+        let selectedIndex = 0;
+        const showChoices = () => {
+          for (let i = 0; i < choices.length; i++) {
+            const prefix = i === selectedIndex ? chalk.cyan("❯") : " ";
+            const num = chalk.gray(`[${choices[i].key}]`);
+            console.log(`${prefix} ${num} ${choices[i].label}`);
+          }
+          console.log(chalk.gray("  [Enter] 終了"));
+        };
+        showChoices();
+
+        const answer = (await ask("")).trim();
+
+        if (answer === "") break;
+
+        const choice = choices.find((c) => c.key === answer);
+        if (!choice) continue;
+
+        result = await retranslateWithTone(text, result.translation, choice.value);
+        displayResult(result);
+      }
+    } finally {
+      rl.close();
     }
   }
 } catch (error) {
