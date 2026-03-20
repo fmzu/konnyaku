@@ -55,7 +55,15 @@ try {
       const choice = choices.find((c) => c.key === key);
       if (!choice) continue;
 
+      const prevTranslation = result.translation;
       result = await retranslateWithTone(text, result.translation, choice.value);
+
+      if (result.translation === prevTranslation) {
+        console.log("");
+        console.log(chalk.gray("これ以上の調整はできません。"));
+        break;
+      }
+
       displayResult(result);
     }
   }
