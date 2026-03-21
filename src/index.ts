@@ -37,24 +37,18 @@ try {
 
   // JP→EN の場合、トーン調整のインタラクティブループ
   if (result.targetLanguage === "English") {
-    const MAX_ADJUSTMENTS = 3;
-    let casualCount = 0;
-    let formalCount = 0;
+    const MAX_LEVEL = 3;
+    let toneLevel = 0; // -3(最カジュアル) 〜 0(初期) 〜 +3(最フォーマル)
 
     while (true) {
       const choices = [];
-      if (casualCount < MAX_ADJUSTMENTS) {
+      if (toneLevel > -MAX_LEVEL) {
         choices.push({ name: "[1] もっとカジュアルに", value: "casual" });
       }
-      if (formalCount < MAX_ADJUSTMENTS) {
+      if (toneLevel < MAX_LEVEL) {
         choices.push({ name: "[2] もっとフォーマルに", value: "formal" });
       }
       choices.push({ name: `[${choices.length + 1}] 終了`, value: "exit" });
-
-      if (choices.length === 1) {
-        console.log(chalk.gray("これ以上の調整はできません。"));
-        break;
-      }
 
       const choice = await select({
         message: "トーンを調整",
@@ -64,8 +58,8 @@ try {
       if (choice === "exit") break;
 
       result = await retranslateWithTone(text, result.translation, choice as "casual" | "formal");
-      if (choice === "casual") casualCount++;
-      if (choice === "formal") formalCount++;
+      if (choice === "casual") toneLevel--;
+      if (choice === "formal") toneLevel++;
 
       displayResult(result);
     }
