@@ -44,10 +44,10 @@ try {
     while (true) {
       const choices = [];
       if (casualCount < MAX_ADJUSTMENTS) {
-        choices.push({ name: `[1] もっとカジュアルに（残り${MAX_ADJUSTMENTS - casualCount}回）`, value: "casual" });
+        choices.push({ name: "[1] もっとカジュアルに", value: "casual" });
       }
       if (formalCount < MAX_ADJUSTMENTS) {
-        choices.push({ name: `[2] もっとフォーマルに（残り${MAX_ADJUSTMENTS - formalCount}回）`, value: "formal" });
+        choices.push({ name: "[2] もっとフォーマルに", value: "formal" });
       }
       choices.push({ name: `[${choices.length + 1}] 終了`, value: "exit" });
 
