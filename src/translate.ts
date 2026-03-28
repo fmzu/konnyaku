@@ -1,10 +1,14 @@
-export interface TranslationResult {
-  translation: string;
-  nuances: string[];
-  toneDescription: string; // text description of tone (EN→JP only)
-  detectedLanguage: string;
-  targetLanguage: string;
-}
+import { z } from "zod";
+
+const TranslationResultSchema = z.object({
+  translation: z.string(),
+  nuances: z.array(z.string()),
+  toneDescription: z.string(), // text description of tone (EN→JP only)
+  detectedLanguage: z.string(),
+  targetLanguage: z.string(),
+});
+
+export type TranslationResult = z.infer<typeof TranslationResultSchema>;
 
 const PROMPT_TEMPLATE = `You are a translation assistant. Translate the given text and provide nuance explanations.
 
@@ -99,12 +103,13 @@ function runAI(prompt: string): TranslationResult {
     throw new Error(`Command failed: ${e.stderr || e.message}`);
   }
 
-  const jsonMatch = output.match(/\{[\s\S]*\}/);
+  const jsonMatch = output.match(/\{[\s\S]*?\}/);
   if (!jsonMatch) {
     throw new Error("Failed to parse translation response");
   }
 
-  return JSON.parse(jsonMatch[0]) as TranslationResult;
+  const parsed = JSON.parse(jsonMatch[0]);
+  return TranslationResultSchema.parse(parsed);
 }
 
 export async function translate(text: string): Promise<TranslationResult> {
