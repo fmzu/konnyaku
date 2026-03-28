@@ -103,12 +103,26 @@ function runAI(prompt: string): TranslationResult {
     throw new Error(`Command failed: ${e.stderr || e.message}`);
   }
 
-  const jsonMatch = output.match(/\{[\s\S]*?\}/);
-  if (!jsonMatch) {
+  const startIndex = output.indexOf("{");
+  if (startIndex === -1) {
     throw new Error("Failed to parse translation response");
   }
 
-  const parsed = JSON.parse(jsonMatch[0]);
+  let parsed: unknown;
+  for (let i = output.lastIndexOf("}"); i >= startIndex; i--) {
+    if (output[i] !== "}") continue;
+    try {
+      parsed = JSON.parse(output.substring(startIndex, i + 1));
+      break;
+    } catch {
+      // try shorter substring
+    }
+  }
+
+  if (parsed === undefined) {
+    throw new Error("Failed to parse translation response");
+  }
+
   return TranslationResultSchema.parse(parsed);
 }
 
