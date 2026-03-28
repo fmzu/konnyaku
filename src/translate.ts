@@ -103,24 +103,23 @@ function runAI(prompt: string): TranslationResult {
     throw new Error(`Command failed: ${e.stderr || e.message}`);
   }
 
-  const startIndex = output.indexOf("{");
-  if (startIndex === -1) {
-    throw new Error("Failed to parse translation response");
-  }
-
   let parsed: unknown;
-  for (let i = output.lastIndexOf("}"); i >= startIndex; i--) {
-    if (output[i] !== "}") continue;
-    try {
-      parsed = JSON.parse(output.substring(startIndex, i + 1));
-      break;
-    } catch {
-      // try shorter substring
+  try {
+    parsed = JSON.parse(output);
+  } catch {
+    const jsonMatch = output.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error(
+        "Failed to parse translation response: no JSON object found in output",
+      );
     }
-  }
-
-  if (parsed === undefined) {
-    throw new Error("Failed to parse translation response");
+    try {
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch {
+      throw new Error(
+        "Failed to parse translation response: extracted JSON is invalid",
+      );
+    }
   }
 
   return TranslationResultSchema.parse(parsed);
