@@ -1,6 +1,8 @@
 import { z } from "zod";
+import { execAI } from "./exec-ai.js";
+import { parseAIJson } from "./parse-ai-json.js";
 
-const TranslationResultSchema = z.object({
+export const TranslationResultSchema = z.object({
   translation: z.string(),
   nuances: z.array(z.string()),
   toneDescription: z.string(), // text description of tone (EN→JP only)
@@ -55,89 +57,8 @@ Rules for toneDescription:
 Text to translate:
 `;
 
-const RETRANSLATE_PROMPT_TEMPLATE = `You are a translation assistant. The following Japanese text was translated to English as shown below. Please provide a more {direction} version of this English translation.
-
-Original Japanese: {originalText}
-Current English translation: {currentTranslation}
-
-Adjust the tone to be more {direction}. Keep the meaning the same.
-
-Respond ONLY with valid JSON in this exact format (no markdown, no code fences):
-{
-  "translation": "adjusted English translation here",
-  "nuances": [
-    "explanation of nuance 1",
-    "explanation of nuance 2"
-  ],
-  "toneDescription": "",
-  "detectedLanguage": "Japanese",
-  "targetLanguage": "English"
-}
-
-Rules for nuances:
-- Explain the English grammar and expressions used in YOUR translation
-- Help the user (a Japanese learner of English) understand WHY you chose those English expressions
-- Write nuance explanations in Japanese
-- 2-4 bullet points
-`;
-
-import { execFileSync } from "node:child_process";
-import { loadConfig } from "./config.js";
-
-function getCommand(): { cmd: string; args: string[] } {
-  const { command } = loadConfig();
-  const parts = command.split(" ");
-  return { cmd: parts[0], args: parts.slice(1) };
-}
-
-function runAI(prompt: string): TranslationResult {
-  const { cmd, args } = getCommand();
-  let output: string;
-  try {
-    const fullArgs = [...args, prompt];
-    output = execFileSync(cmd, fullArgs, {
-      encoding: "utf-8",
-      maxBuffer: 10 * 1024 * 1024,
-    }).trim();
-  } catch (e: any) {
-    throw new Error(`Command failed: ${e.stderr || e.message}`);
-  }
-
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(output);
-  } catch {
-    const jsonMatch = output.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) {
-      throw new Error(
-        "Failed to parse translation response: no JSON object found in output",
-      );
-    }
-    try {
-      parsed = JSON.parse(jsonMatch[0]);
-    } catch {
-      throw new Error(
-        "Failed to parse translation response: extracted JSON is invalid",
-      );
-    }
-  }
-
-  return TranslationResultSchema.parse(parsed);
-}
-
-export async function translate(text: string): Promise<TranslationResult> {
+export function translate(text: string): TranslationResult {
   const prompt = PROMPT_TEMPLATE + text;
-  return runAI(prompt);
-}
-
-export async function retranslateWithTone(
-  originalText: string,
-  currentTranslation: string,
-  direction: "casual" | "formal",
-): Promise<TranslationResult> {
-  const prompt = RETRANSLATE_PROMPT_TEMPLATE
-    .replace(/\{direction\}/g, direction)
-    .replace(/\{originalText\}/g, originalText)
-    .replace(/\{currentTranslation\}/g, currentTranslation);
-  return runAI(prompt);
+  const output = execAI(prompt);
+  return parseAIJson(output, TranslationResultSchema);
 }
