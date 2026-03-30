@@ -36,8 +36,8 @@ export function retranslateWithTone(
   const directionJa = direction === "casual" ? "casual" : "formal";
   const prompt = RETRANSLATE_PROMPT_TEMPLATE
     .replace(/\{direction\}/g, directionJa)
-    .replace("{originalText}", originalText)
-    .replace("{currentTranslation}", currentTranslation);
+    .replace(/\{originalText\}/g, originalText)
+    .replace(/\{currentTranslation\}/g, currentTranslation);
   const output = execAI(prompt);
   return parseAIJson(output, TranslationResultSchema);
 }

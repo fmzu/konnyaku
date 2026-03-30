@@ -1,8 +1,8 @@
 import { loadConfig } from "./load-config.js";
 import { saveConfig } from "./save-config.js";
 
-export function handleUseSubcommand(args: string[], commandName: string): boolean {
-  if (args[0] !== "use") return false;
+export function handleUseSubcommand(args: string[], commandName: string): void {
+  if (args[0] !== "use") return;
 
   if (args.length < 2) {
     const { command } = loadConfig();

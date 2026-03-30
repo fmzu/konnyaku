@@ -15,7 +15,7 @@ export function displayResult(result: TranslationResult): void {
   }
 
   // トーン説明
-  if (result.toneDescription) {
+  if (result.targetLanguage === "Japanese" && result.toneDescription) {
     lines.push("");
     lines.push(chalk.gray(result.toneDescription));
   }
