@@ -135,10 +135,9 @@ export async function retranslateWithTone(
   currentTranslation: string,
   direction: "casual" | "formal",
 ): Promise<TranslationResult> {
-  const directionJa = direction === "casual" ? "casual" : "formal";
   const prompt = RETRANSLATE_PROMPT_TEMPLATE
-    .replace(/\{direction\}/g, directionJa)
-    .replace("{originalText}", originalText)
-    .replace("{currentTranslation}", currentTranslation);
+    .replace(/\{direction\}/g, direction)
+    .replace(/\{originalText\}/g, originalText)
+    .replace(/\{currentTranslation\}/g, currentTranslation);
   return runAI(prompt);
 }
