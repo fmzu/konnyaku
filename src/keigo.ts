@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import { execFileSync } from "node:child_process";
-import { loadConfig, saveConfig } from "./config.js";
+import { execAI } from "./exec-ai.js";
+import { handleUseSubcommand } from "./handle-use.js";
 
 const PROMPT = `あなたは日本語の敬語変換アシスタントです。
 入力されたカジュアルな日本語を、Slackで上司やクライアントに送る丁寧な敬語に変換してください。
@@ -16,19 +16,7 @@ const PROMPT = `あなたは日本語の敬語変換アシスタントです。
 `;
 
 function convert(text: string): string {
-  const { command } = loadConfig();
-  const parts = command.split(" ");
-  const cmd = parts[0];
-  const args = [...parts.slice(1), PROMPT + text];
-
-  try {
-    return execFileSync(cmd, args, {
-      encoding: "utf-8",
-      maxBuffer: 10 * 1024 * 1024,
-    }).trim();
-  } catch (e: any) {
-    throw new Error(`Command failed: ${e.stderr || e.message}`);
-  }
+  return execAI(PROMPT + text);
 }
 
 const args = process.argv.slice(2);
@@ -39,19 +27,7 @@ if (args.length === 0) {
   process.exit(1);
 }
 
-if (args[0] === "use") {
-  if (args.length < 2) {
-    const { command } = loadConfig();
-    console.log(`現在のコマンド: ${command}`);
-    console.log("Usage: keigo use <command>");
-    console.log('Example: keigo use "claude -p"');
-    process.exit(0);
-  }
-  const command = args.slice(1).join(" ");
-  saveConfig({ command });
-  console.log(`コマンドを設定しました: ${command}`);
-  process.exit(0);
-}
+handleUseSubcommand(args, "keigo");
 
 const text = args.join(" ");
 
