@@ -27,7 +27,13 @@ export function handleUseSubcommand(
   }
 
   const command = args.slice(1).join(" ");
-  deps.saveConfig({ command });
+  try {
+    deps.saveConfig({ command });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`設定の保存に失敗しました: ${message}`);
+    process.exit(1);
+  }
   console.log(`コマンドを設定しました: ${command}`);
   process.exit(0);
 }

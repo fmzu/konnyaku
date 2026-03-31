@@ -16,5 +16,9 @@ export function parseAIJson<T>(output: string, schema: z.ZodType<T>): T {
     }
   }
 
-  return schema.parse(parsed);
+  try {
+    return schema.parse(parsed);
+  } catch {
+    throw new Error("AI応答が期待された形式と一致しません。再試行してください。");
+  }
 }
