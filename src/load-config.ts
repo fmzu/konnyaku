@@ -13,9 +13,9 @@ const DEFAULT_CONFIG: Config = {
   command: "codex exec",
 };
 
-export function loadConfig(): Config {
+export function loadConfig(configPath: string = CONFIG_PATH): Config {
   try {
-    const data = readFileSync(CONFIG_PATH, "utf-8");
+    const data = readFileSync(configPath, "utf-8");
     return { ...DEFAULT_CONFIG, ...JSON.parse(data) };
   } catch {
     return { ...DEFAULT_CONFIG };

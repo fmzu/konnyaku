@@ -1,10 +1,11 @@
 import { writeFileSync, mkdirSync } from "node:fs";
-import { CONFIG_DIR, CONFIG_PATH, loadConfig } from "./load-config.js";
+import { dirname } from "node:path";
+import { CONFIG_PATH, loadConfig } from "./load-config.js";
 import type { Config } from "./load-config.js";
 
-export function saveConfig(config: Partial<Config>): void {
-  const current = loadConfig();
+export function saveConfig(config: Partial<Config>, configPath: string = CONFIG_PATH): void {
+  const current = loadConfig(configPath);
   const merged = { ...current, ...config };
-  mkdirSync(CONFIG_DIR, { recursive: true });
-  writeFileSync(CONFIG_PATH, JSON.stringify(merged, null, 2) + "\n");
+  mkdirSync(dirname(configPath), { recursive: true });
+  writeFileSync(configPath, JSON.stringify(merged, null, 2) + "\n");
 }
