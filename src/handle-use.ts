@@ -1,11 +1,25 @@
-import { loadConfig } from "./load-config.js";
-import { saveConfig } from "./save-config.js";
+import { loadConfig as defaultLoadConfig } from "./load-config.js";
+import { saveConfig as defaultSaveConfig } from "./save-config.js";
 
-export function handleUseSubcommand(args: string[], commandName: string): void {
+interface Deps {
+  loadConfig: typeof defaultLoadConfig;
+  saveConfig: typeof defaultSaveConfig;
+}
+
+const defaultDeps: Deps = {
+  loadConfig: defaultLoadConfig,
+  saveConfig: defaultSaveConfig,
+};
+
+export function handleUseSubcommand(
+  args: string[],
+  commandName: string,
+  deps: Deps = defaultDeps,
+): void {
   if (args[0] !== "use") return;
 
   if (args.length < 2) {
-    const { command } = loadConfig();
+    const { command } = deps.loadConfig();
     console.log(`現在のコマンド: ${command}`);
     console.log(`Usage: ${commandName} use <command>`);
     console.log(`Example: ${commandName} use "claude -p"`);
@@ -13,7 +27,7 @@ export function handleUseSubcommand(args: string[], commandName: string): void {
   }
 
   const command = args.slice(1).join(" ");
-  saveConfig({ command });
+  deps.saveConfig({ command });
   console.log(`コマンドを設定しました: ${command}`);
   process.exit(0);
 }
