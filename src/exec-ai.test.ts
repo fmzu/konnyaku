@@ -9,7 +9,7 @@ describe("execAI", () => {
 
   it("存在しないコマンドでエラーが投げられる", () => {
     expect(() => execAI("test", "nonexistent-command-xyz")).toThrow(
-      "Command failed"
+      'コマンド "nonexistent-command-xyz" が見つかりません'
     );
   });
 });
