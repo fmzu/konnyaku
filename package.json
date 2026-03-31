@@ -1,6 +1,6 @@
 {
   "name": "konnyaku",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "CLI translation tool with nuance explanations",
   "type": "module",
   "main": "dist/index.js",
@@ -9,7 +9,8 @@
     "keigo": "dist/keigo.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md"
   ],
   "scripts": {
     "dev": "bun run src/index.ts",
