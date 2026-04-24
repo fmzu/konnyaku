@@ -57,8 +57,11 @@ Rules for toneDescription:
 Text to translate:
 `;
 
-export function translate(text: string): TranslationResult {
+export function translate(
+  text: string,
+  deps: { execAI: (prompt: string) => string } = { execAI },
+): TranslationResult {
   const prompt = PROMPT_TEMPLATE + text;
-  const output = execAI(prompt);
+  const output = deps.execAI(prompt);
   return parseAIJson(output, TranslationResultSchema);
 }
