@@ -1,4 +1,12 @@
-import { describe, it, expect, spyOn, beforeEach, afterEach, mock } from "bun:test";
+import {
+  afterEach,
+  beforeEach,
+  describe,
+  expect,
+  it,
+  mock,
+  spyOn,
+} from "bun:test";
 import { handleUseSubcommand } from "./handle-use.js";
 
 describe("handleUseSubcommand", () => {

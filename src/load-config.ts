@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { homedir } from "node:os";
+import { join } from "node:path";
 
 export interface Config {
   command: string;
@@ -18,7 +18,11 @@ export function loadConfig(configPath: string = CONFIG_PATH): Config {
   try {
     data = readFileSync(configPath, "utf-8");
   } catch (error: unknown) {
-    if (error instanceof Error && 'code' in error && (error as NodeJS.ErrnoException).code === 'ENOENT') {
+    if (
+      error instanceof Error &&
+      "code" in error &&
+      (error as NodeJS.ErrnoException).code === "ENOENT"
+    ) {
       return { ...DEFAULT_CONFIG };
     }
     const message = error instanceof Error ? error.message : String(error);
@@ -28,7 +32,9 @@ export function loadConfig(configPath: string = CONFIG_PATH): Config {
   try {
     return { ...DEFAULT_CONFIG, ...JSON.parse(data) };
   } catch {
-    console.error(`Warning: 設定ファイルのJSONが不正です。デフォルト設定を使用します。`);
+    console.error(
+      `Warning: 設定ファイルのJSONが不正です。デフォルト設定を使用します。`,
+    );
     return { ...DEFAULT_CONFIG };
   }
 }

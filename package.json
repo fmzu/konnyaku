@@ -15,8 +15,10 @@
   "scripts": {
     "dev": "bun run src/index.ts",
     "test": "bun test",
-    "build": "npx tsc",
-    "prepublishOnly": "npx tsc"
+    "build": "bunx tsc",
+    "prepublishOnly": "bunx tsc",
+    "lint": "bunx @biomejs/biome check .",
+    "format": "bunx @biomejs/biome check --write ."
   },
   "keywords": [
     "translation",

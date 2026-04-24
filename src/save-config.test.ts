@@ -1,9 +1,9 @@
-import { describe, it, expect, beforeEach, afterEach } from "bun:test";
-import { readFileSync, mkdirSync, rmSync } from "node:fs";
-import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, it } from "bun:test";
+import { mkdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { saveConfig } from "./save-config.js";
+import { join } from "node:path";
 import { loadConfig } from "./load-config.js";
+import { saveConfig } from "./save-config.js";
 
 describe("saveConfig", () => {
   const testDir = join(tmpdir(), `konnyaku-test-save-${Date.now()}`);

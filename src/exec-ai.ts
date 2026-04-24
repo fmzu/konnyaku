@@ -13,15 +13,23 @@ export function execAI(prompt: string, command?: string): string {
       maxBuffer: 10 * 1024 * 1024,
     }).trim();
   } catch (e: unknown) {
-    if (e instanceof Error && 'code' in e && (e as NodeJS.ErrnoException).code === 'ENOENT') {
+    if (
+      e instanceof Error &&
+      "code" in e &&
+      (e as NodeJS.ErrnoException).code === "ENOENT"
+    ) {
       throw new Error(
-        `コマンド "${bin}" が見つかりません。\nAIコマンドを設定してください: konnyaku use "claude -p"`
+        `コマンド "${bin}" が見つかりません。\nAIコマンドを設定してください: konnyaku use "claude -p"`,
       );
     }
-    if (e instanceof Error && 'stderr' in e) {
-      const stderr = String((e as any).stderr || "").trim();
-      throw new Error(`コマンド "${bin}" が失敗しました: ${stderr || e.message}`);
+    if (e instanceof Error && "stderr" in e) {
+      const stderr = String((e as { stderr?: unknown }).stderr || "").trim();
+      throw new Error(
+        `コマンド "${bin}" が失敗しました: ${stderr || e.message}`,
+      );
     }
-    throw new Error(`コマンドの実行に失敗しました: ${e instanceof Error ? e.message : String(e)}`);
+    throw new Error(
+      `コマンドの実行に失敗しました: ${e instanceof Error ? e.message : String(e)}`,
+    );
   }
 }

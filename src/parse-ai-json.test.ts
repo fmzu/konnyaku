@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { z } from "zod";
 import { parseAIJson } from "./parse-ai-json.js";
 
@@ -25,14 +25,14 @@ describe("parseAIJson", () => {
 
   it("JSONが含まれない出力でエラーを投げる", () => {
     expect(() => parseAIJson("no json here", testSchema)).toThrow(
-      "no JSON object found"
+      "no JSON object found",
     );
   });
 
   it("不正なJSONでエラーを投げる", () => {
-    expect(() => parseAIJson("prefix {invalid json} suffix", testSchema)).toThrow(
-      "extracted JSON is invalid"
-    );
+    expect(() =>
+      parseAIJson("prefix {invalid json} suffix", testSchema),
+    ).toThrow("extracted JSON is invalid");
   });
 
   it("zodスキーマに合わないJSONでエラーを投げる", () => {

@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 import { select } from "@inquirer/prompts";
-import { translate } from "./translate.js";
-import { retranslateWithTone } from "./retranslate.js";
 import { displayResult } from "./display-result.js";
 import { handleUseSubcommand } from "./handle-use.js";
+import { retranslateWithTone } from "./retranslate.js";
+import { translate } from "./translate.js";
 
 const args = process.argv.slice(2);
 
@@ -44,7 +44,11 @@ try {
 
       if (choice === "exit") break;
 
-      result = retranslateWithTone(text, result.translation, choice as "casual" | "formal");
+      result = retranslateWithTone(
+        text,
+        result.translation,
+        choice as "casual" | "formal",
+      );
       if (choice === "casual") toneLevel--;
       if (choice === "formal") toneLevel++;
 

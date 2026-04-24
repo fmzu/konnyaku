@@ -1,6 +1,9 @@
 import { execAI } from "./exec-ai.js";
 import { parseAIJson } from "./parse-ai-json.js";
-import { TranslationResultSchema, type TranslationResult } from "./translate.js";
+import {
+  type TranslationResult,
+  TranslationResultSchema,
+} from "./translate.js";
 
 const RETRANSLATE_PROMPT_TEMPLATE = `You are a translation assistant. The following Japanese text was translated to English as shown below. Please provide a more {direction} version of this English translation.
 
@@ -34,8 +37,10 @@ export function retranslateWithTone(
   direction: "casual" | "formal",
 ): TranslationResult {
   const directionJa = direction === "casual" ? "casual" : "formal";
-  const prompt = RETRANSLATE_PROMPT_TEMPLATE
-    .replaceAll("{direction}", directionJa)
+  const prompt = RETRANSLATE_PROMPT_TEMPLATE.replaceAll(
+    "{direction}",
+    directionJa,
+  )
     .replaceAll("{originalText}", originalText)
     .replaceAll("{currentTranslation}", currentTranslation);
   const output = execAI(prompt);

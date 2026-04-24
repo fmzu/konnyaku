@@ -1,4 +1,4 @@
-import { describe, it, expect } from "bun:test";
+import { describe, expect, it } from "bun:test";
 import { execAI } from "./exec-ai.js";
 
 describe("execAI", () => {
@@ -9,7 +9,7 @@ describe("execAI", () => {
 
   it("存在しないコマンドでエラーが投げられる", () => {
     expect(() => execAI("test", "nonexistent-command-xyz")).toThrow(
-      'コマンド "nonexistent-command-xyz" が見つかりません'
+      'コマンド "nonexistent-command-xyz" が見つかりません',
     );
   });
 });
