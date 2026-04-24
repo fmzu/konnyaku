@@ -35,6 +35,7 @@ export function retranslateWithTone(
   originalText: string,
   currentTranslation: string,
   direction: "casual" | "formal",
+  deps: { execAI: (prompt: string) => string } = { execAI },
 ): TranslationResult {
   const directionJa = direction === "casual" ? "casual" : "formal";
   const prompt = RETRANSLATE_PROMPT_TEMPLATE.replaceAll(
@@ -43,6 +44,6 @@ export function retranslateWithTone(
   )
     .replaceAll("{originalText}", originalText)
     .replaceAll("{currentTranslation}", currentTranslation);
-  const output = execAI(prompt);
+  const output = deps.execAI(prompt);
   return parseAIJson(output, TranslationResultSchema);
 }
