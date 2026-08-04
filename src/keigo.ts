@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import { copyWithMessage } from "./copy-with-message.js";
 import { handleUseSubcommand } from "./handle-use.js";
 import { convertToKeigo } from "./keigo-convert.js";
 
@@ -16,8 +17,9 @@ handleUseSubcommand(args, "keigo");
 const text = args.join(" ");
 
 try {
-  const result = convertToKeigo(text);
+  const result = await convertToKeigo(text);
   console.log(result);
+  await copyWithMessage(result);
 } catch (error) {
   if (error instanceof Error) {
     console.error("Error:", error.message);

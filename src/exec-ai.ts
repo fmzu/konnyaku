@@ -1,35 +1,34 @@
-import { execFileSync } from "node:child_process";
 import { loadConfig } from "./load-config.js";
+import type { CommandFailure } from "./run-command.js";
+import { runCommand } from "./run-command.js";
+import { startSpinner } from "./spinner.js";
 
-export function execAI(prompt: string, command?: string): string {
+export async function execAI(
+  prompt: string,
+  command?: string,
+  label = "翻訳中",
+): Promise<string> {
   const cmd = command ?? loadConfig().command;
   const parts = cmd.split(" ");
   const bin = parts[0];
   const args = [...parts.slice(1), prompt];
 
+  const stopSpinner = startSpinner(label);
   try {
-    return execFileSync(bin, args, {
-      encoding: "utf-8",
-      maxBuffer: 10 * 1024 * 1024,
-    }).trim();
+    const { stdout } = await runCommand(bin, args);
+    return stdout.trim();
   } catch (e: unknown) {
-    if (
-      e instanceof Error &&
-      "code" in e &&
-      (e as NodeJS.ErrnoException).code === "ENOENT"
-    ) {
+    const err = e as CommandFailure & { code?: string | number };
+    if (err.code === "ENOENT") {
       throw new Error(
         `コマンド "${bin}" が見つかりません。\nAIコマンドを設定してください: konnyaku use "claude -p"`,
       );
     }
-    if (e instanceof Error && "stderr" in e) {
-      const stderr = String((e as { stderr?: unknown }).stderr || "").trim();
-      throw new Error(
-        `コマンド "${bin}" が失敗しました: ${stderr || e.message}`,
-      );
-    }
+    const stderr = (err.stderr ?? "").trim();
     throw new Error(
-      `コマンドの実行に失敗しました: ${e instanceof Error ? e.message : String(e)}`,
+      `コマンド "${bin}" が失敗しました: ${stderr || err.message}`,
     );
+  } finally {
+    stopSpinner();
   }
 }

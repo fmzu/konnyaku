@@ -1,9 +1,11 @@
 #!/usr/bin/env node
 
 import { select } from "@inquirer/prompts";
+import { copyWithMessage } from "./copy-with-message.js";
 import { displayResult } from "./display-result.js";
+import { displayVariants } from "./display-variants.js";
 import { handleUseSubcommand } from "./handle-use.js";
-import { retranslateWithTone } from "./retranslate.js";
+import { isClipboardSupported } from "./is-clipboard-supported.js";
 import { translate } from "./translate.js";
 
 const args = process.argv.slice(2);
@@ -19,41 +21,30 @@ handleUseSubcommand(args, "konnyaku");
 const text = args.join(" ");
 
 try {
-  let result = translate(text);
-  displayResult(result);
+  const result = await translate(text);
 
-  // JP→EN の場合、トーン調整のインタラクティブループ
   if (result.targetLanguage === "English") {
-    const MAX_LEVEL = 3;
-    let toneLevel = 0; // -3(最カジュアル) 〜 0(初期) 〜 +3(最フォーマル)
+    displayVariants(result);
 
-    while (true) {
-      const choices = [];
-      if (toneLevel > -MAX_LEVEL) {
-        choices.push({ name: "[1] もっとカジュアルに", value: "casual" });
-      }
-      if (toneLevel < MAX_LEVEL) {
-        choices.push({ name: "[2] もっとフォーマルに", value: "formal" });
-      }
-      choices.push({ name: `[${choices.length + 1}] 終了`, value: "exit" });
-
+    if (isClipboardSupported()) {
       const choice = await select({
-        message: "トーンを調整",
-        choices,
-      }).catch(() => "exit" as const);
+        message: "どれを使う？（選ぶとコピーされます）",
+        choices: [
+          { name: "[1] カジュアル", value: "casual" },
+          { name: "[2] ふつう", value: "neutral" },
+          { name: "[3] ビジネス", value: "business" },
+          { name: "[4] コピーしない", value: "none" },
+        ],
+      }).catch(() => "none" as const);
 
-      if (choice === "exit") break;
-
-      result = retranslateWithTone(
-        text,
-        result.translation,
-        choice as "casual" | "formal",
-      );
-      if (choice === "casual") toneLevel--;
-      if (choice === "formal") toneLevel++;
-
-      displayResult(result);
+      if (choice !== "none") {
+        const variant =
+          result.variants[choice as "casual" | "neutral" | "business"];
+        await copyWithMessage(variant.text);
+      }
     }
+  } else {
+    displayResult(result);
   }
 } catch (error) {
   if (error instanceof Error) {

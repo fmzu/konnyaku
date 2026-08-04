@@ -1,6 +1,6 @@
 {
   "name": "konnyaku",
-  "version": "0.5.2",
+  "version": "0.6.0",
   "description": "CLI translation tool with nuance explanations",
   "type": "module",
   "main": "dist/index.js",

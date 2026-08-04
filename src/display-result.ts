@@ -2,7 +2,12 @@ import chalk from "chalk";
 import { highlightEnglish } from "./highlight-english.js";
 import type { TranslationResult } from "./translate.js";
 
-export function displayResult(result: TranslationResult): void {
+type JapaneseTranslationResult = Extract<
+  TranslationResult,
+  { targetLanguage: "Japanese" }
+>;
+
+export function displayResult(result: JapaneseTranslationResult): void {
   const lines: string[] = [];
 
   // 翻訳
@@ -15,7 +20,7 @@ export function displayResult(result: TranslationResult): void {
   }
 
   // トーン説明
-  if (result.targetLanguage === "Japanese" && result.toneDescription) {
+  if (result.toneDescription) {
     lines.push("");
     lines.push(chalk.gray(result.toneDescription));
   }
