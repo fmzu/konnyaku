@@ -9,6 +9,7 @@ export type SpinnerDeps = {
   ) => ReturnType<typeof setInterval>;
   clearInterval: (timer: ReturnType<typeof setInterval>) => void;
   now: () => number;
+  isTTY: () => boolean;
 };
 
 const defaultDeps: SpinnerDeps = {
@@ -18,6 +19,7 @@ const defaultDeps: SpinnerDeps = {
   setInterval,
   clearInterval,
   now: Date.now,
+  isTTY: () => process.stderr.isTTY === true,
 };
 
 /**
@@ -28,6 +30,11 @@ export function startSpinner(
   label: string,
   deps: SpinnerDeps = defaultDeps,
 ): () => void {
+  // 非TTY（パイプ・ログ・CI）ではアニメーションがゴミとして蓄積するため表示しない
+  if (!deps.isTTY()) {
+    return () => {};
+  }
+
   const startedAt = deps.now();
   let frame = 0;
   let lastLength = 0;

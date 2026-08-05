@@ -16,6 +16,12 @@ handleUseSubcommand(args, "keigo");
 
 const text = args.join(" ");
 
+if (text.trim() === "") {
+  console.log("Usage: keigo <カジュアルなテキスト>");
+  console.log("Example: keigo 明日休みます");
+  process.exit(1);
+}
+
 try {
   const result = await convertToKeigo(text);
   console.log(result);

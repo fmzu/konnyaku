@@ -20,6 +20,12 @@ handleUseSubcommand(args, "konnyaku");
 
 const text = args.join(" ");
 
+if (text.trim() === "") {
+  console.log("Usage: konnyaku <text to translate>");
+  console.log("Example: konnyaku Hello! How are you?");
+  process.exit(1);
+}
+
 try {
   const result = await translate(text);
 

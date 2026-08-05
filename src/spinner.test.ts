@@ -10,6 +10,7 @@ function createDeps(nowValues: number[]) {
 
   const deps = {
     write: (text: string) => writes.push(text),
+    isTTY: () => true,
     setInterval: mock((callback: () => void, ms: number) => {
       capturedCallback = callback;
       capturedMs = ms;
@@ -78,5 +79,16 @@ describe("startSpinner", () => {
     expect(clearIntervalMock).toHaveBeenCalledTimes(1);
     const lastWrite = writes[writes.length - 1];
     expect(lastWrite).toMatch(/^\r\s*\r$/);
+  });
+});
+
+describe("startSpinner (non-TTY)", () => {
+  it("does not render anything when stderr is not a TTY", () => {
+    const { deps, writes } = createDeps([0]);
+    const nonTtyDeps = { ...deps, isTTY: () => false };
+    const stop = startSpinner("翻訳中", nonTtyDeps);
+    stop();
+    expect(writes.length).toBe(0);
+    expect(nonTtyDeps.setInterval).not.toHaveBeenCalled();
   });
 });
