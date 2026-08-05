@@ -86,4 +86,4 @@ keigo use "claude -p"
 ## 前提条件
 
 - [Node.js](https://nodejs.org/) v18以上
-- AIコマンド（デフォルト: [Codex CLI](https://github.com/openai/codex)）
+- AIコマンド（デフォルト: [Codex CLI](https://github.com/openai/codex)。`codex exec --skip-git-repo-check` として実行される。gitリポジトリ外でも動かすために必要なフラグ）

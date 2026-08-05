@@ -25,11 +25,11 @@ describe("loadConfig", () => {
   it("設定ファイルにないキーはデフォルト値で補完される", () => {
     writeFileSync(testConfigPath, JSON.stringify({}));
     const config = loadConfig(testConfigPath);
-    expect(config.command).toBe("codex exec");
+    expect(config.command).toBe("codex exec --skip-git-repo-check");
   });
 
   it("設定ファイルが存在しない場合、デフォルト設定を返す", () => {
     const config = loadConfig(join(testDir, "nonexistent.json"));
-    expect(config.command).toBe("codex exec");
+    expect(config.command).toBe("codex exec --skip-git-repo-check");
   });
 });

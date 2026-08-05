@@ -10,7 +10,9 @@ export const CONFIG_DIR = join(homedir(), ".config", "konnyaku");
 export const CONFIG_PATH = join(CONFIG_DIR, "settings.json");
 
 const DEFAULT_CONFIG: Config = {
-  command: "codex exec",
+  // --skip-git-repo-check: codex exec は git リポジトリ内でしか動かない安全機構を持つが、
+  // 翻訳ツールとしてはどのディレクトリからでも呼べる必要があるためスキップする
+  command: "codex exec --skip-git-repo-check",
 };
 
 export function loadConfig(configPath: string = CONFIG_PATH): Config {
